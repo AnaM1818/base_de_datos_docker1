@@ -30,13 +30,14 @@ def init_db():
     ''')
     
     # # Crear tabla de productos de ejemplo
-    # cursor.execute('''
-    #     CREATE TABLE IF NOT EXISTS productos (
-    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
-    #         nombre TEXT NOT NULL,
-    #         precio REAL NOT NULL,
-    #         categoria TEXT,
-    #         stock INTEGER DEFAULT 0
+    cursor.execute('''
+         CREATE TABLE IF NOT EXISTS producto (
+             id INTEGER PRIMARY KEY AUTOINCREMENT,
+             nombre TEXT NOT NULL,
+             categoria TEXT,
+             marca TEXT,
+             presentacion TEXT,
+             precio INTEGER
     #     )
     # ''')
     
@@ -85,14 +86,34 @@ def init_db():
         ]
         cursor.executemany('INSERT INTO cliente (nombre, tipo_cliente, direccion, telefono) VALUES (?, ?, ?, ?)', usuarios_ejemplo)
         
-        # productos_ejemplo = [
-        #     ('Laptop', 999.99, 'Electrónicos', 15),
-        #     ('Mouse', 25.50, 'Accesorios', 50),
-        #     ('Teclado', 45.00, 'Accesorios', 30),
-        #     ('Monitor', 299.99, 'Electrónicos', 20),
-        #     ('Silla Gaming', 199.99, 'Muebles', 8)
-        # ]
-        # cursor.executemany('INSERT INTO productos (nombre, precio, categoria, stock) VALUES (?, ?, ?, ?)', productos_ejemplo)
+        productos_ejemplo = [
+            ("Aguila","Cerveza","Bavaria","Botella",4500)
+            ("Aguila Light","Cerveza","Bavaria","Lata",4700)
+            ("Club Colombia","Cerveza","Bavaria","Botella",5200)
+            ("Club Colombia Roja","Cerveza","Bavaria","Lata",5400)
+            ("Club Colombia Negra","Cerveza","Bavaria","Botella",5500)
+            ("Poker","Cerveza","Bavaria","Botella",4300)
+            ("Poker","Cerveza","Bavaria","Lata",4500)
+            ("Costeña","Cerveza","Bavaria","Botella",4200)
+            ("Costeña","Cerveza","Bavaria","Lata",4400)
+            ("Pilsen","Cerveza","Bavaria","Botella",4100)
+            ("Pilsen","Cerveza","Bavaria","Lata",4300)
+            ("Redd's","Cerveza","Bavaria","Botella",4800)
+            ("Redd's","Cerveza","Bavaria","Lata",5000)
+            ("Aguila Cero","Cerveza","Bavaria","Botella",4600)
+            ("Aguila Cero","Cerveza","Bavaria","Lata",4800)
+            ("Club Colombia Dorada","Cerveza","Bavaria","Botella",5300)
+            ("Club Colombia Dorada","Cerveza","Bavaria","Lata",5500)
+            ("Poker Radler","Cerveza","Bavaria","Botella",4700)
+            ("Poker Radler","Cerveza","Bavaria","Lata",4900)
+            ("Costeña Bacana","Cerveza","Bavaria","Botella",4400)
+            ("Costeña Bacana","Cerveza","Bavaria","Lata",4600)
+            ("Aguila Original","Cerveza","Bavaria","Botella",4500)
+            ("Aguila Original","Cerveza","Bavaria","Lata",4700)
+            ("Club Colombia Trigo","Cerveza","Bavaria","Botella",5600)
+            ("Club Colombia Trigo","Cerveza","Bavaria","Lata",5800)
+        ]
+        cursor.executemany('INSERT INTO producto (nombre, categoria, marca, presentacion, precio) VALUES (?, ?, ?, ?, ?)', productos_ejemplo)
         
         # ventas_ejemplo = [
         #     (1, 1, 1),
