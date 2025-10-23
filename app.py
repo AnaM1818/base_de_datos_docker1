@@ -31,28 +31,29 @@ def init_db():
     
     # # Crear tabla de productos de ejemplo
     cursor.execute('''
-         CREATE TABLE IF NOT EXISTS producto (
-             id INTEGER PRIMARY KEY AUTOINCREMENT,
-             nombre TEXT NOT NULL,
-             categoria TEXT,
-             marca TEXT,
-             presentacion TEXT,
-             precio INTEGER
-    #     )
-    # ''')
+        CREATE TABLE IF NOT EXISTS producto (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            categoria TEXT,
+            marca TEXT,
+            presentacion TEXT,
+            precio INTEGER NOT NULL
+        )
+    ''')
     
     # # Crear tabla de ventas de ejemplo
-    # cursor.execute('''
-    #     CREATE TABLE IF NOT EXISTS ventas (
-    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
-    #         usuario_id INTEGER,
-    #         producto_id INTEGER,
-    #         cantidad INTEGER,
-    #         fecha_venta DATETIME DEFAULT CURRENT_TIMESTAMP,
-    #         FOREIGN KEY (usuario_id) REFERENCES usuarios (id),
-    #         FOREIGN KEY (producto_id) REFERENCES productos (id)
-    #     )
-    # ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS pedido (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fecha DATE NOT NULL,
+            total INTEGER NOT NULL,
+            estado TEXT,
+            metodo_pago TEXT,
+            observaciones TEXT,
+            direccion_entrega TEXT,
+            fecha_entrega DATE
+        )
+    ''')
     
     # Insertar datos de ejemplo si no existen
     cursor.execute('SELECT COUNT(*) FROM cliente')
@@ -87,42 +88,62 @@ def init_db():
         cursor.executemany('INSERT INTO cliente (nombre, tipo_cliente, direccion, telefono) VALUES (?, ?, ?, ?)', usuarios_ejemplo)
         
         productos_ejemplo = [
-            ("Aguila","Cerveza","Bavaria","Botella",4500)
-            ("Aguila Light","Cerveza","Bavaria","Lata",4700)
-            ("Club Colombia","Cerveza","Bavaria","Botella",5200)
-            ("Club Colombia Roja","Cerveza","Bavaria","Lata",5400)
-            ("Club Colombia Negra","Cerveza","Bavaria","Botella",5500)
-            ("Poker","Cerveza","Bavaria","Botella",4300)
-            ("Poker","Cerveza","Bavaria","Lata",4500)
-            ("Costeña","Cerveza","Bavaria","Botella",4200)
-            ("Costeña","Cerveza","Bavaria","Lata",4400)
-            ("Pilsen","Cerveza","Bavaria","Botella",4100)
-            ("Pilsen","Cerveza","Bavaria","Lata",4300)
-            ("Redd's","Cerveza","Bavaria","Botella",4800)
-            ("Redd's","Cerveza","Bavaria","Lata",5000)
-            ("Aguila Cero","Cerveza","Bavaria","Botella",4600)
-            ("Aguila Cero","Cerveza","Bavaria","Lata",4800)
-            ("Club Colombia Dorada","Cerveza","Bavaria","Botella",5300)
-            ("Club Colombia Dorada","Cerveza","Bavaria","Lata",5500)
-            ("Poker Radler","Cerveza","Bavaria","Botella",4700)
-            ("Poker Radler","Cerveza","Bavaria","Lata",4900)
-            ("Costeña Bacana","Cerveza","Bavaria","Botella",4400)
-            ("Costeña Bacana","Cerveza","Bavaria","Lata",4600)
-            ("Aguila Original","Cerveza","Bavaria","Botella",4500)
-            ("Aguila Original","Cerveza","Bavaria","Lata",4700)
-            ("Club Colombia Trigo","Cerveza","Bavaria","Botella",5600)
+            ("Aguila","Cerveza","Bavaria","Botella",4500),
+            ("Aguila Light","Cerveza","Bavaria","Lata",4700),
+            ("Club Colombia","Cerveza","Bavaria","Botella",5200),
+            ("Club Colombia Roja","Cerveza","Bavaria","Lata",5400),
+            ("Club Colombia Negra","Cerveza","Bavaria","Botella",5500),
+            ("Poker","Cerveza","Bavaria","Botella",4300),
+            ("Poker","Cerveza","Bavaria","Lata",4500),
+            ("Costeña","Cerveza","Bavaria","Botella",4200),
+            ("Costeña","Cerveza","Bavaria","Lata",4400),
+            ("Pilsen","Cerveza","Bavaria","Botella",4100),
+            ("Pilsen","Cerveza","Bavaria","Lata",4300),
+            ("Redd's","Cerveza","Bavaria","Botella",4800),
+            ("Redd's","Cerveza","Bavaria","Lata",5000),
+            ("Aguila Cero","Cerveza","Bavaria","Botella",4600),
+            ("Aguila Cero","Cerveza","Bavaria","Lata",4800),
+            ("Club Colombia Dorada","Cerveza","Bavaria","Botella",5300),
+            ("Club Colombia Dorada","Cerveza","Bavaria","Lata",5500),
+            ("Poker Radler","Cerveza","Bavaria","Botella",4700),
+            ("Poker Radler","Cerveza","Bavaria","Lata",4900),
+            ("Costeña Bacana","Cerveza","Bavaria","Botella",4400),
+            ("Costeña Bacana","Cerveza","Bavaria","Lata",4600),
+            ("Aguila Original","Cerveza","Bavaria","Botella",4500),
+            ("Aguila Original","Cerveza","Bavaria","Lata",4700),
+            ("Club Colombia Trigo","Cerveza","Bavaria","Botella",5600),
             ("Club Colombia Trigo","Cerveza","Bavaria","Lata",5800)
         ]
         cursor.executemany('INSERT INTO producto (nombre, categoria, marca, presentacion, precio) VALUES (?, ?, ?, ?, ?)', productos_ejemplo)
         
-        # ventas_ejemplo = [
-        #     (1, 1, 1),
-        #     (2, 2, 2),
-        #     (1, 3, 1),
-        #     (3, 1, 1),
-        #     (4, 4, 1)
-        # ]
-        # cursor.executemany('INSERT INTO ventas (usuario_id, producto_id, cantidad) VALUES (?, ?, ?)', ventas_ejemplo)
+        ventas_ejemplo = [
+            ("2025-10-01", 125000, "Pendiente", "Efectivo", "Sin observaciones", "Cra 10 #23-45", "2025-10-03"),
+            ("2025-09-28", 76000, "Enviado", "Tarjeta", "Dejar en recepción", "Calle 5 #12-34", "2025-09-30"),
+            ("2025-09-30", 43000, "Entregado", "Contra entrega", "Recibido por Juan Pérez", "Av. 7 #45-67", "2025-10-01"),
+            ("2025-10-02", 98000, "Pendiente", "Transferencia", "Pago en proceso", "Cra 15 #67-89", "2025-10-06"),
+            ("2025-10-03", 54000, "En preparación", "Efectivo", "Agregar bolsa extra", "Calle 8 #56-78", "2025-10-05"),
+            ("2025-09-25", 210000, "Cancelado", "Tarjeta", "Pedido cancelado por cliente", "Cra 20 #34-56", "2025-11-23"),
+            ("2025-10-05", 67000, "En reparto", "Contra entrega", "Contactar antes de llegar", "Calle 3 #21-43", "2025-10-06"),
+            ("2025-10-06", 45000, "Pendiente", "Efectivo", "Horario de entrega 9-12", "Av. 9 #12-34", "2025-10-08"),
+            ("2025-09-29", 125000, "Entregado", "Transferencia", "Entrega a cuarto piso", "Cra 18 #23-45", "2025-09-30"),
+            ("2025-10-04", 82000, "Enviado", "Tarjeta", "Verificar existencia", "Calle 6 #78-90", "2025-10-06"),
+            ("2025-10-01", 138000, "Pendiente", "Efectivo", "Incluir factura impresa", "Cra 22 #45-67", "2025-10-04"),
+            ("2025-09-27", 39000, "Entregado", "Contra entrega", "Cliente satisfecho", "Calle 12 #34-56", "2025-09-28"),
+            ("2025-10-07", 157000, "En preparación", "Transferencia", "Preparar con cuidado", "Av. 5 #67-89", "2025-10-09"),
+            ("2025-10-08", 47000, "Pendiente", "Tarjeta", "Llamar al llegar", "Cra 30 #12-34", "2025-10-10"),
+            ("2025-09-26", 92000, "Cancelado", "Efectivo", "Sin stock", "Calle 9 #45-67", "2025-11-20"),
+            ("2025-10-09", 30000, "En reparto", "Contra entrega", "Dejar con portería", "Av. 11 #23-45", "2025-10-09"),
+            ("2025-10-02", 115000, "Enviado", "Transferencia", "Revisar productos frágiles", "Cra 25 #67-89", "2025-10-04"),
+            ("2025-09-24", 68000, "Entregado", "Tarjeta", "Recibido por administrador", "Calle 14 #56-78", "2025-09-25"),
+            ("2025-10-10", 255000, "Pendiente", "Transferencia", "Pedido grande, coordinar transporte", "Av. 13 #78-90", "2025-10-15"),
+            ("2025-10-11", 54000, "En preparación", "Efectivo", "Incluir manual de uso", "Cra 17 #23-45", "2025-10-13"),
+            ("2025-09-23", 47000, "Entregado", "Contra entrega", "Cliente no contestó llamada", "Calle 15 #67-89", "2025-09-24"),
+            ("2025-10-12", 99000, "Enviado", "Tarjeta", "Entregar en horario nocturno", "Cra 28 #45-67", "2025-10-14"),
+            ("2025-10-13", 61000, "Pendiente", "Efectivo", "Confirmar dirección", "Av. 16 #12-34", "2025-12-19"),
+            ("2025-10-14", 73000, "En reparto", "Transferencia", "Evitar entregar fines de semana", "Calle 17 #34-56", "2025-10-15"),
+            ("2025-10-01", 125000, "Pendiente", "Efectivo", "Sin observaciones", "Cra 10 #23-45", "2025-10-03")
+         ]
+        cursor.executemany('INSERT INTO pedido (fecha, total, estado, metodo_pago, observaciones, direccion_entrega, fecha_entrega) VALUES (?, ?, ?, ?, ?, ?, ?)', ventas_ejemplo)
     
     conn.commit()
     conn.close()
