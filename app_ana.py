@@ -19,13 +19,17 @@ def init_db():
     
     # Crear tabla de usuarios de ejemplo
     cursor.execute('''
-        CREATE TABLE IF NOT EXISTS cliente (
-            id_cliente INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT NOT NULL,
-            tipo_cliente TEXT NOT NULL,
-            direccion TEXT,
-            telefono INTEGER,
-            fecha_creacion DATE DEFAULT CURRENT_DATE
+        CREATE TABLE IF NOT EXISTS pedido (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fecha DATE NOT NULL,
+            id_cliente,
+            total INETEGER,
+            id_empleado,
+            estado TEXT,         
+            metodo_pago TEXT NOT NULL,    
+            observaciones TEXT,             
+            direccion_entrega TEXT,         
+            fecha_entrega DATE
         )
     ''')
     
@@ -37,64 +41,26 @@ def init_db():
             categoria TEXT,
             marca TEXT,
             presentacion TEXT,
-            precio INTEGER NOT NULL
-        )
-    ''')
-    
-    # # Crear tabla de ventas de ejemplo
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS pedido (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fecha DATE NOT NULL,
-            total INTEGER NOT NULL,
-            estado TEXT,
-            metodo_pago TEXT,
-            observaciones TEXT,
-            direccion_entrega TEXT,
-            fecha_entrega DATE
-        )
-    ''')
-
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS product (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nombre TEXT NOT NULL,
-            categoria TEXT,
-            marca TEXT,
-            presentacion TEXT,
-            precio INTEGER NOT NULL,
+            precio INTEGER,
             id_proveedor
         )
     ''')
 
+
+    # # Crear tabla de ventas de ejemplo
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS detallepedido (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_pedido,
-            id_producto, 
+            id_producto,
             cantidad INTEGER NOT NULL,
-            subtotal INTEGER
+            subtotal INTEGER NOT NULL
         )
     ''')
 
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS detallepedido (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fecha DATE DEFAULT CURRENT_DATE,
-            id_cliente,
-            total INTEGER,
-            id_empleado,
-            estado TEXT,          
-            metodo_pago INTEGER,     
-            observaciones TEXT,             
-            direccion_entrega TEXT,         
-            fecha_entrega date  
-        )
-    ''')
 
-    
     # Insertar datos de ejemplo si no existen
-    cursor.execute('SELECT COUNT(*) FROM cliente')
+    cursor.execute('SELECT COUNT(*) FROM usuarios')
     if cursor.fetchone()[0] == 0:
         usuarios_ejemplo = [
             ("Supermercado Central","Mayorista","Cra 10 #23-45",3101234567),
@@ -123,7 +89,7 @@ def init_db():
             ("Minimercado Familiar","Minorista","Calle 17 #34-56",3323456789),
             ("Cafetería La Taza","Cafetería","Cra 19 #56-78",3334567890)
         ]
-        cursor.executemany('INSERT INTO cliente (nombre, tipo_cliente, direccion, telefono) VALUES (?, ?, ?, ?)', usuarios_ejemplo)
+        cursor.executemany('INSERT INTO pedido (fecha, id_cliente, total, id_empleado, estado, metodo_pago, observaciones, direccion_entrega, fecha_entrega) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', usuarios_ejemplo)
         
         productos_ejemplo = [
             ("Aguila","Cerveza","Bavaria","Botella",4500),
@@ -152,7 +118,7 @@ def init_db():
             ("Club Colombia Trigo","Cerveza","Bavaria","Botella",5600),
             ("Club Colombia Trigo","Cerveza","Bavaria","Lata",5800)
         ]
-        cursor.executemany('INSERT INTO producto (nombre, categoria, marca, presentacion, precio) VALUES (?, ?, ?, ?, ?)', productos_ejemplo)
+        cursor.executemany('INSERT INTO producto (nombre, categoria, marca, presentacion, precio, id_proveedor) VALUES (?, ?, ?, ?, ?, ?)', productos_ejemplo)
         
         ventas_ejemplo = [
             ("2025-10-01", 125000, "Pendiente", "Efectivo", "Sin observaciones", "Cra 10 #23-45", "2025-10-03"),
@@ -181,7 +147,7 @@ def init_db():
             ("2025-10-14", 73000, "En reparto", "Transferencia", "Evitar entregar fines de semana", "Calle 17 #34-56", "2025-10-15"),
             ("2025-10-01", 125000, "Pendiente", "Efectivo", "Sin observaciones", "Cra 10 #23-45", "2025-10-03")
          ]
-        cursor.executemany('INSERT INTO pedido (fecha, total, estado, metodo_pago, observaciones, direccion_entrega, fecha_entrega) VALUES (?, ?, ?, ?, ?, ?, ?)', ventas_ejemplo)
+        cursor.executemany('INSERT INTO detallepedido (fecha, total, estado, metodo_pago, observaciones, direccion_entrega, fecha_entrega) VALUES (?, ?, ?, ?, ?, ?, ?)', ventas_ejemplo)
     
     conn.commit()
     conn.close()
